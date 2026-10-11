@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0e11">
+<title>Caixa | Sabor Original</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #0d0e11; --surface: #171a20; --surface-2: #20242c; --line: #2d323c;
+  --fg: #f1f2f4; --muted: #98a0ad; --gold: #eba63f; --gold-ink: #1b1305;
+  --ok: #47c58b; --late: #f0605d; --focus: #ffd37a;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #eef0f3; --surface: #ffffff; --surface-2: #e6e9ee; --line: #cfd4dc;
+    --fg: #15181d; --muted: #586070; --gold: #a96500; --gold-ink: #ffffff;
+    --ok: #12804f; --late: #c62b28; --focus: #8a5200;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.4; padding: 0 16px 40px; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1280px; margin-inline: auto; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: calc(14px + env(safe-area-inset-top, 0px)) 0 14px; }
+.brand { display: flex; align-items: baseline; gap: 8px; font-family: var(--font-display); line-height: 1; }
+.brand-s { font-weight: 700; font-size: 1.7rem; letter-spacing: 0.06em; }
+.brand-o { font-weight: 600; font-size: 1.25rem; color: var(--gold); font-style: italic; }
+.tag { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; letter-spacing: 0.04em; margin-right: auto; }
+.nav { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 4px; }
+.nav button { border: 0; background: transparent; color: var(--muted); padding: 8px 16px; border-radius: 7px; font-weight: 600; font-size: 0.95rem; }
+.nav button[aria-selected="true"] { background: var(--gold); color: var(--gold-ink); }
+.conn { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+.conn i { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); display: inline-block; }
+.conn.on i { background: var(--ok); }
+.conn.off i { background: var(--late); }
+.linkbtn { border: 0; background: none; color: var(--muted); text-decoration: underline; font-size: 0.85rem; padding: 4px; }
+h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; letter-spacing: 0.02em; margin: 0 0 10px; line-height: 1.1; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.stack { display: grid; gap: 16px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label, .lbl { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.in { width: 100%; min-width: 0; padding: 11px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface-2); font-size: 1.05rem; }
+.in.warn { border-color: var(--late); }
+.btn { border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); border-radius: 10px; padding: 12px 18px; font-weight: 600; font-size: 1rem; }
+.btn.gold { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); }
+.btn.big { width: 100%; padding: 16px 18px; font-size: 1.2rem; font-family: var(--font-display); letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700; }
+.btn.small { padding: 6px 10px; font-size: 0.85rem; }
+.btn[disabled] { opacity: 0.5; cursor: default; }
+.hint { color: var(--muted); font-size: 0.9rem; margin: 0; }
+.err { color: var(--late); font-weight: 600; min-height: 1.2em; margin: 0; }
+.login { max-width: 420px; margin: 8vh auto 0; }
+
+.layout { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.hoje { margin-bottom: 18px; display: grid; gap: 4px; }
+.hoje .big { font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1; }
+.hoje .sub { color: var(--muted); font-size: 0.88rem; }
+.lista { display: grid; gap: 8px; }
+.conta { text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.conta.sel { border-color: var(--gold); background: var(--surface-2); }
+.c-mesa { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+.c-total { font-weight: 600; align-self: center; }
+.c-meta { grid-column: 1 / -1; color: var(--muted); font-size: 0.85rem; }
+.c-meta b { color: var(--late); font-weight: 600; }
+.empty { border: 1px dashed var(--line); border-radius: 12px; padding: 28px 18px; text-align: center; color: var(--muted); }
+.empty strong { display: block; color: var(--fg); font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
+
+.d-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 14px; }
+.d-head .mesa { font-family: var(--font-display); font-weight: 700; font-size: 2.4rem; line-height: 1; }
+.d-head .cli { color: var(--muted); overflow-wrap: anywhere; }
+.pedido { border-top: 1px solid var(--line); padding: 12px 0; display: grid; gap: 8px; }
+.p-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: 0.85rem; color: var(--muted); }
+.pill { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); }
+.pill.pronto, .pill.entregue { color: var(--ok); border-color: var(--ok); }
+.pill.preparando { color: var(--gold); border-color: var(--gold); }
+.p-head .btn { margin-left: auto; }
+.linha { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 10px; align-items: baseline; }
+.linha .q { font-family: var(--font-display); font-weight: 700; color: var(--gold); min-width: 2.2ch; }
+.linha .n { overflow-wrap: anywhere; }
+.linha .n em { display: block; font-style: normal; color: var(--muted); font-size: 0.85rem; }
+.linha .v { text-align: right; font-weight: 600; display: grid; gap: 4px; justify-items: end; }
+.linha .v small { display: block; color: var(--muted); font-weight: 400; font-size: 0.78rem; }
+.linha .v .in { width: 120px; padding: 6px 8px; font-size: 0.95rem; }
+
+.fechar { margin-top: 6px; border-top: 2px solid var(--line); padding-top: 16px; display: grid; gap: 16px; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: end; }
+.chk { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.chk input { width: 20px; height: 20px; accent-color: var(--gold); }
+.formas { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.forma { border: 2px solid var(--line); background: var(--surface-2); border-radius: 10px; padding: 12px 8px; font-weight: 600; }
+.forma[aria-pressed="true"] { border-color: var(--gold); background: var(--gold); color: var(--gold-ink); }
+.totais { display: grid; gap: 6px; }
+.totais .r { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); }
+.totais .r.total { color: var(--fg); font-family: var(--font-display); font-weight: 700; font-size: 2.2rem; line-height: 1.1; padding-top: 6px; }
+.totais .r.troco b { color: var(--ok); }
+.aviso { color: var(--late); font-weight: 600; margin: 0; }
+.acoes { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+
+.menu-add { display: grid; grid-template-columns: minmax(0, 1fr) 150px auto; gap: 10px; align-items: end; }
+.menu-row { display: grid; grid-template-columns: minmax(0, 1fr) 140px auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+.menu-row.off .in { opacity: 0.55; }
+.m-act { display: flex; align-items: center; gap: 12px; }
+.chk2 { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); }
+.chk2 input { width: 18px; height: 18px; accent-color: var(--gold); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 12px 18px; border-radius: 10px; font-weight: 600; max-width: calc(100vw - 32px); z-index: 20; }
+[hidden] { display: none !important; }
+
+#recibo { display: none; }
+@media (max-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .menu-add { grid-template-columns: minmax(0, 1fr) 120px; }
+  .menu-add .btn { grid-column: 1 / -1; }
+  .menu-row { grid-template-columns: minmax(0, 1fr) 120px; }
+  .m-act { grid-column: 1 / -1; justify-content: space-between; }
+}
+@media print {
+  body { background: #fff; color: #000; padding: 0; }
+  .wrap, .toast { display: none !important; }
+  #recibo { display: block; font-family: 'Courier New', monospace; font-size: 13px; color: #000; background: #fff; max-width: 300px; margin: 0 auto; }
+  #recibo h3 { margin: 0; text-align: center; font-size: 18px; }
+  #recibo p { margin: 2px 0; text-align: center; }
+  #recibo .rl { display: flex; justify-content: space-between; gap: 8px; }
+  #recibo hr { border: 0; border-top: 1px dashed #000; margin: 8px 0; }
+  #recibo .tt { font-weight: bold; font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="brand-s">SABOR</span><span class="brand-o">Original</span></div>
+    <span class="tag">Caixa</span>
+    <nav id="nav" class="nav" aria-label="Tela" hidden>
+      <button id="nav-contas" type="button" aria-selected="true">Contas</button>
+      <button id="nav-cardapio" type="button" aria-selected="false">Cardápio e preços</button>
+    </nav>
+    <span id="conn" class="conn" hidden><i></i><span id="conn-txt"></span></span>
+    <button id="logout" class="linkbtn" type="button" hidden>Sair</button>
+  </header>
+
+  <div id="config-err" class="card" hidden>
+    <h2>Falta configurar</h2>
+    <p class="hint">Abra este arquivo (index.html) e cole a URL e a chave do seu projeto Supabase no começo do script.</p>
+  </div>
+
+  <section id="login" class="login card stack" hidden>
+    <h2>Entrar</h2>
+    <form id="login-form" class="stack">
+      <div class="field"><label for="email">E-mail</label><input id="email" class="in" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="senha">Senha</label><input id="senha" class="in" type="password" autocomplete="current-password" required></div>
+      <p id="login-err" class="err" role="alert"></p>
+      <button class="btn gold big" id="login-btn" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <main id="app" hidden>
+    <div id="view-contas" class="layout">
+      <aside>
+        <section id="hoje" class="card hoje"></section>
+        <h2>Contas abertas</h2>
+        <div id="lista" class="lista"></div>
+      </aside>
+      <section id="detalhe" class="card"></section>
+    </div>
+
+    <section id="view-cardapio" class="card stack" hidden>
+      <div>
+        <h2>Cardápio e preços</h2>
+        <p class="hint">Mude o preço e saia do campo para salvar. Itens desativados somem dos botões do garçom, mas o preço continua valendo para pedidos já feitos.</p>
+      </div>
+      <div class="menu-add">
+        <div class="field"><label for="m-nome">Novo item</label><input id="m-nome" class="in" type="text" maxlength="60" placeholder="Ex.: Porção de lula"></div>
+        <div class="field"><label for="m-preco">Preço (R$)</label><input id="m-preco" class="in num" type="text" inputmode="decimal" placeholder="0,00"></div>
+        <button id="m-add" class="btn gold" type="button">Adicionar</button>
+      </div>
+      <div id="m-lista"></div>
+    </section>
+  </main>
+</div>
+<div id="recibo"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.0/dist/umd/supabase.min.js"></script>
+<script>
+/* ===== CONFIGURAÇÃO: cole aqui os dados do seu projeto Supabase ===== */
+var SUPABASE_URL = 'https://persjsywifbuhqilktut.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
+/* ==================================================================== */
+</script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  function h(tag, attrs) {
+    var e = document.createElement(tag), a = attrs || {};
+    Object.keys(a).forEach(function (k) {
+      var v = a[k];
+      if (k === 'class') e.className = v;
+      else if (k === 'text') e.textContent = v;
+      else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+      else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v);
+    });
+    (function add(list) {
+      for (var i = 0; i < list.length; i++) {
+        var c = list[i];
+        if (c == null || c === false) continue;
+        if (Array.isArray(c)) add(c);
+        else e.append(c.nodeType ? c : document.createTextNode(String(c)));
+      }
+    })(Array.prototype.slice.call(arguments, 2));
+    return e;
+  }
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  if (!window.supabase || SUPABASE_URL.indexOf('COLE_AQUI') === 0 || SUPABASE_ANON_KEY.indexOf('COLE_AQUI') === 0) {
+    $('#config-err').hidden = false; return;
+  }
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var FORMAS = [['dinheiro', 'Dinheiro'], ['pix', 'Pix'], ['debito', 'Débito'], ['credito', 'Crédito']];
+  var tabs = new Map(), menuRows = [], priceMap = {}, selected = null, lastSig = '', manual = {}, pending = {}, view = 'contas';
+  var opts = { servico: lsGet('sabor-servico') === '1', desconto: '', pessoas: 1, forma: null, recebido: '' };
+  var channel = null, pollTimer = null, refetchTimer = null;
+
+  /* ---------- utilidades ---------- */
+  function toast(msg) {
+    var t = $('#toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, 3500);
+  }
+  function setConn(state, txt) { var c = $('#conn'); c.hidden = false; c.className = 'conn ' + state; $('#conn-txt').textContent = txt; }
+  function norm(s) { return String(s == null ? '' : s).trim().toLowerCase(); }
+  function brl(c) { return (c / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  function toCents(v) {
+    if (v == null) return 0;
+    var s = String(v).trim().replace(/\s|R\$/g, '');
+    if (!s) return 0;
+    if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+    var n = parseFloat(s);
+    return isFinite(n) && n > 0 ? Math.round(n * 100) : 0;
+  }
+  function ago(ms) { var m = Math.max(0, Math.floor((Date.now() - ms) / 60000)); return m < 1 ? 'agora' : m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; }
+  function hhmm(ms) { var d = new Date(ms); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  function uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+  }
+  function statusLabel(s) { return s === 'novo' ? 'Na fila' : s === 'preparando' ? 'Preparando' : s === 'pronto' ? 'Pronto' : 'Entregue'; }
+  function money2(c) { return c ? (c / 100).toFixed(2).replace('.', ',') : ''; }
+
+  /* ---------- conta ---------- */
+  function billFor(tab) {
+    var lines = [], byKey = {}, missing = 0, sub = 0;
+    tab.orders.forEach(function (o) {
+      (o.itens || []).forEach(function (it, idx) {
+        var key = o.id + ':' + idx;
+        var unit = priceMap[norm(it.n)] || 0;
+        if (unit) delete manual[key]; else if (manual[key]) unit = manual[key];
+        var line = unit * (it.q || 1);
+        if (!unit) missing++;
+        sub += line;
+        var L = { key: key, o: o, it: it, unit: unit, line: line };
+        lines.push(L); byKey[key] = L;
+      });
+    });
+    return { lines: lines, byKey: byKey, missing: missing, sub: sub };
+  }
+  function totals(b) {
+    var servico = opts.servico ? Math.round(b.sub * 0.10) : 0;
+    var desconto = Math.min(toCents(opts.desconto), b.sub + servico);
+    var total = b.sub + servico - desconto;
+    var pessoas = Math.max(1, parseInt(opts.pessoas, 10) || 1);
+    var recebido = toCents(opts.recebido);
+    return { sub: b.sub, servico: servico, desconto: desconto, total: total, pessoas: pessoas, cada: Math.ceil(total / pessoas), troco: recebido - total, recebido: recebido };
+  }
+
+  /* ---------- telas ---------- */
+  function showView(v) {
+    view = v;
+    $('#view-contas').hidden = v !== 'contas';
+    $('#view-cardapio').hidden = v !== 'cardapio';
+    $('#nav-contas').setAttribute('aria-selected', String(v === 'contas'));
+    $('#nav-cardapio').setAttribute('aria-selected', String(v === 'cardapio'));
+  }
+  function setView(v) {
+    showView(v);
+    if (v === 'cardapio') loadCardapio();
+    else loadCardapio().then(function () { lastSig = ''; refetch(); });
+  }
+  $('#nav-contas').addEventListener('click', function () { setView('contas'); });
+  $('#nav-cardapio').addEventListener('click', function () { setView('cardapio'); });
+
+  /* ---------- login ---------- */
+  function showLogin() { $('#login').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; $('#nav').hidden = true; $('#conn').hidden = true; }
+  function enter() {
+    $('#login').hidden = true; $('#app').hidden = false; $('#logout').hidden = false; $('#nav').hidden = false;
+    showView('contas');
+    renderDetail();
+    loadCardapio().then(refetch);
+    loadHoje();
+    subscribe();
+    clearInterval(pollTimer);
+    pollTimer = setInterval(function () { refetch(); loadHoje(); }, 20000);
+  }
+  function leave() {
+    clearInterval(pollTimer);
+    if (channel) { sb.removeChannel(channel); channel = null; }
+    tabs = new Map(); selected = null; showLogin();
+  }
+  $('#login-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var btn = $('#login-btn'); btn.disabled = true; $('#login-err').textContent = '';
+    sb.auth.signInWithPassword({ email: $('#email').value.trim(), password: $('#senha').value }).then(function (r) {
+      btn.disabled = false;
+      if (r.error) {
+        var m = r.error.message || '';
+        $('#login-err').textContent = /invalid login/i.test(m) ? 'E-mail ou senha incorretos.' : /confirm/i.test(m) ? 'E-mail ainda não confirmado no Supabase.' : 'Erro: ' + m;
+        return;
+      }
+      $('#senha').value = ''; enter();
+    }, function () { btn.disabled = false; $('#login-err').textContent = 'Sem internet. Tente de novo.'; });
+  });
+  $('#logout').addEventListener('click', function () { sb.auth.signOut().then(leave); });
+  sb.auth.getSession().then(function (r) { if (r.data && r.data.session) enter(); else showLogin(); });
+  sb.auth.onAuthStateChange(function (ev) { if (ev === 'SIGNED_OUT') leave(); });
+
+  /* ---------- dados ---------- */
+  function rebuildPrices() {
+    priceMap = {};
+    menuRows.forEach(function (x) { var c = Math.round(Number(x.preco) * 100); if (c > 0) priceMap[norm(x.nome)] = c; });
+  }
+  function loadCardapio() {
+    return sb.from('cardapio').select('id,nome,preco,ativo,ordem').order('ordem').order('id').then(function (r) {
+      if (r.error) return;
+      menuRows = r.data || [];
+      rebuildPrices();
+      if (view === 'cardapio') renderMenu();
+    });
+  }
+  function refetch() {
+    var since = new Date(Date.now() - 36 * 3600 * 1000).toISOString();
+    return sb.from('pedidos').select('*').is('pago_em', null).neq('status', 'cancelado').gte('criado_em', since).order('criado_em', { ascending: true }).then(function (r) {
+      if (r.error) { setConn('off', 'Sem conexão'); return; }
+      var next = new Map();
+      r.data.forEach(function (o) {
+        o.t = Date.parse(o.criado_em);
+        var key = norm(o.mesa), tab = next.get(key);
+        if (!tab) { tab = { key: key, mesa: o.mesa, orders: [], first: o.t, clientes: [] }; next.set(key, tab); }
+        tab.orders.push(o);
+        if (o.cliente && tab.clientes.indexOf(o.cliente) < 0) tab.clientes.push(o.cliente);
+      });
+      tabs = next;
+      if (selected && !tabs.has(selected)) selected = null;
+      renderList();
+      var tab = tabs.get(selected);
+      var sig = tab ? tab.orders.map(function (o) { return o.id + o.status; }).join('|') : '';
+      if (sig !== lastSig) { lastSig = sig; renderDetail(); } else updateTotals();
+    }, function () { setConn('off', 'Sem conexão'); });
+  }
+  function subscribe() {
+    if (channel) sb.removeChannel(channel);
+    channel = sb.channel('pedidos-caixa').on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, function () {
+      clearTimeout(refetchTimer); refetchTimer = setTimeout(refetch, 400);
+    }).subscribe(function (st) {
+      if (st === 'SUBSCRIBED') setConn('on', 'Ao vivo');
+      else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') setConn('off', 'Reconectando');
+    });
+  }
+  function loadHoje() {
+    var d = new Date(); d.setHours(0, 0, 0, 0);
+    sb.from('contas').select('total,forma').gte('pago_em', d.toISOString()).then(function (r) {
+      var box = $('#hoje'); box.textContent = '';
+      if (r.error) { box.append(h('span', { class: 'hint', text: 'Resumo do dia indisponível. Rodou o caixa.sql no Supabase?' })); return; }
+      var sum = 0, by = {};
+      r.data.forEach(function (c) { var v = Math.round(Number(c.total) * 100); sum += v; by[c.forma] = (by[c.forma] || 0) + v; });
+      box.append(h('span', { class: 'lbl', text: 'Recebido hoje' }), h('span', { class: 'big num', text: brl(sum) }),
+        h('span', { class: 'sub', text: r.data.length + (r.data.length === 1 ? ' conta paga' : ' contas pagas') }),
+        h('span', { class: 'sub', text: FORMAS.filter(function (f) { return by[f[0]]; }).map(function (f) { return f[1] + ' ' + brl(by[f[0]]); }).join(' · ') }));
+    });
+  }
+
+  /* ---------- cardápio e preços ---------- */
+  function nextOrdem() { return menuRows.reduce(function (m, x) { return Math.max(m, x.ordem || 0); }, 0) + 1; }
+  function saveItem(x, patch) {
+    sb.from('cardapio').update(patch).eq('id', x.id).then(function (r) {
+      if (r.error) { toast('Não foi possível salvar. Rodou o cardapio-editar.sql no Supabase?'); loadCardapio(); return; }
+      Object.keys(patch).forEach(function (k) { x[k] = patch[k]; });
+      rebuildPrices(); toast('Salvo');
+      if ('ativo' in patch) renderMenu();
+    });
+  }
+  function renderMenu() {
+    var box = $('#m-lista'); box.textContent = '';
+    if (!menuRows.length) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Cardápio vazio' }), 'Adicione o primeiro item acima.')); return; }
+    menuRows.forEach(function (x) {
+      var nome = h('input', { class: 'in', type: 'text', maxlength: '60', value: x.nome, 'aria-label': 'Nome do item' });
+      var preco = h('input', { class: 'in num', type: 'text', inputmode: 'decimal', placeholder: '0,00', value: money2(Math.round(Number(x.preco) * 100)), 'aria-label': 'Preço de ' + x.nome });
+      var ativo = h('input', { type: 'checkbox', 'aria-label': 'Ativo' }); ativo.checked = !!x.ativo;
+      var rm = h('button', { type: 'button', class: 'btn small', text: 'Apagar' });
+      nome.addEventListener('change', function () {
+        var v = nome.value.trim();
+        if (!v) { nome.value = x.nome; return; }
+        saveItem(x, { nome: v });
+      });
+      preco.addEventListener('change', function () {
+        var c = toCents(preco.value); preco.value = money2(c);
+        saveItem(x, { preco: c / 100 });
+      });
+      ativo.addEventListener('change', function () { saveItem(x, { ativo: ativo.checked }); });
+      rm.addEventListener('click', function () {
+        if (rm.getAttribute('data-sure') !== '1') {
+          rm.setAttribute('data-sure', '1'); rm.textContent = 'Confirmar';
+          setTimeout(function () { rm.removeAttribute('data-sure'); rm.textContent = 'Apagar'; }, 4000);
+          return;
+        }
+        sb.from('cardapio').delete().eq('id', x.id).then(function (r) {
+          if (r.error) toast('Não foi possível apagar.'); else { toast('Item apagado'); loadCardapio(); }
+        });
+      });
+      box.append(h('div', { class: 'menu-row' + (x.ativo ? '' : ' off') }, nome, preco,
+        h('div', { class: 'm-act' }, h('label', { class: 'chk2' }, ativo, h('span', { text: 'Ativo' })), rm)));
+    });
+  }
+  function addMenuItem() {
+    var nome = $('#m-nome').value.trim(), c = toCents($('#m-preco').value);
+    if (!nome) { toast('Digite o nome do item.'); $('#m-nome').focus(); return; }
+    if (menuRows.some(function (x) { return norm(x.nome) === norm(nome); })) { toast('Esse item já existe no cardápio.'); return; }
+    sb.from('cardapio').insert({ nome: nome, preco: c / 100, ordem: nextOrdem() }).then(function (r) {
+      if (r.error) { toast('Não foi possível adicionar. Rodou o cardapio-editar.sql no Supabase?'); return; }
+      $('#m-nome').value = ''; $('#m-preco').value = '';
+      toast('Item adicionado'); loadCardapio();
+    });
+  }
+  $('#m-add').addEventListener('click', addMenuItem);
+  ['#m-nome', '#m-preco'].forEach(function (s) {
+    $(s).addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); addMenuItem(); } });
+  });
+  function saveManualToMenu(L) {
+    var c = manual[L.key];
+    if (!c) { toast('Digite o preço primeiro.'); return; }
+    var found = menuRows.filter(function (x) { return norm(x.nome) === norm(L.it.n); })[0];
+    var req = found
+      ? sb.from('cardapio').update({ preco: c / 100 }).eq('id', found.id)
+      : sb.from('cardapio').insert({ nome: String(L.it.n).trim(), preco: c / 100, ativo: false, ordem: nextOrdem() });
+    req.then(function (r) {
+      if (r.error) { toast('Não foi possível guardar o preço. Rodou o cardapio-editar.sql no Supabase?'); return; }
+      toast('Preço guardado');
+      loadCardapio().then(function () { lastSig = ''; refetch(); });
+    });
+  }
+
+  /* ---------- lista de contas abertas ---------- */
+  function select(key) {
+    selected = key;
+    opts.desconto = ''; opts.pessoas = 1; opts.forma = null; opts.recebido = '';
+    renderList(); renderDetail();
+    var t = tabs.get(key); lastSig = t ? t.orders.map(function (o) { return o.id + o.status; }).join('|') : '';
+    try { if (window.innerWidth <= 860) $('#detalhe').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+  }
+  function renderList() {
+    var box = $('#lista'); box.textContent = '';
+    var arr = Array.from(tabs.values()).sort(function (a, b) { return a.first - b.first; });
+    if (!arr.length) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Nenhuma conta aberta' }), 'Os pedidos enviados pelos garçons aparecem aqui, agrupados por mesa.')); return; }
+    arr.forEach(function (tab) {
+      var b = billFor(tab), n = tab.orders.length;
+      box.append(h('button', { type: 'button', class: 'conta' + (tab.key === selected ? ' sel' : ''), onclick: function () { select(tab.key); } },
+        h('span', { class: 'c-mesa', text: 'Mesa ' + tab.mesa }),
+        h('span', { class: 'c-total num', text: brl(b.sub) }),
+        h('span', { class: 'c-meta' }, n + (n === 1 ? ' pedido' : ' pedidos') + ' · há ' + ago(tab.first), b.missing ? h('b', { text: ' · falta preço' }) : null)));
+    });
+  }
+
+  /* ---------- detalhe da conta ---------- */
+  function cancelOrder(btn, id) {
+    if (btn.getAttribute('data-sure') !== '1') {
+      btn.setAttribute('data-sure', '1'); btn.textContent = 'Confirmar cancelamento';
+      setTimeout(function () { btn.removeAttribute('data-sure'); btn.textContent = 'Cancelar pedido'; }, 4000);
+      return;
+    }
+    sb.from('pedidos').update({ status: 'cancelado' }).eq('id', id).then(function (r) {
+      if (r.error) toast('Não foi possível cancelar. Tente de novo.'); else { toast('Pedido cancelado'); refetch(); }
+    });
+  }
+  function renderDetail() {
+    var box = $('#detalhe'); box.textContent = '';
+    var tab = tabs.get(selected);
+    if (!tab) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Selecione uma mesa' }), 'Toque em uma conta aberta para ver os pedidos e receber.')); return; }
+    var b = billFor(tab);
+    box.append(h('div', { class: 'd-head' }, h('span', { class: 'mesa', text: 'Mesa ' + tab.mesa }), tab.clientes.length ? h('span', { class: 'cli', text: tab.clientes.join(', ') }) : null));
+
+    tab.orders.forEach(function (o) {
+      var cancel = h('button', { type: 'button', class: 'btn small', text: 'Cancelar pedido' });
+      cancel.addEventListener('click', function () { cancelOrder(cancel, o.id); });
+      var ped = h('div', { class: 'pedido' },
+        h('div', { class: 'p-head' }, h('span', { class: 'num', text: hhmm(o.t) }), h('span', { class: 'pill ' + o.status, text: statusLabel(o.status) }), o.garcom ? h('span', { text: 'Garçom: ' + o.garcom }) : null, cancel));
+      b.lines.filter(function (L) { return L.o.id === o.id; }).forEach(function (L) {
+        var v;
+        if (L.unit && !manual[L.key]) v = h('span', { class: 'v' }, h('span', { 'data-key': L.key, class: 'num', text: brl(L.line) }), (L.it.q || 1) > 1 ? h('small', { class: 'num', text: brl(L.unit) + ' cada' }) : null);
+        else {
+          var inp = h('input', { class: 'in warn num', type: 'text', inputmode: 'decimal', placeholder: 'Preço un.', 'aria-label': 'Preço unitário de ' + L.it.n, value: money2(manual[L.key] || 0) });
+          inp.addEventListener('input', function () { manual[L.key] = toCents(inp.value); updateTotals(); });
+          var guardar = h('button', { type: 'button', class: 'btn small', text: 'Guardar preço' });
+          guardar.addEventListener('click', function () { saveManualToMenu(L); });
+          v = h('span', { class: 'v' }, inp, h('small', { 'data-key': L.key, class: 'num', text: L.unit ? brl(L.line) : 'sem preço' }), guardar);
+        }
+        ped.append(h('div', { class: 'linha' }, h('span', { class: 'q num', text: (L.it.q || 1) + '×' }), h('span', { class: 'n' }, L.it.n, L.it.o ? h('em', { text: L.it.o }) : null), v));
+      });
+      if (o.obs) ped.append(h('div', { class: 'hint', text: 'Obs.: ' + o.obs }));
+      box.append(ped);
+    });
+
+    var servico = h('input', { type: 'checkbox', id: 'servico' }); servico.checked = opts.servico;
+    servico.addEventListener('change', function () { opts.servico = servico.checked; lsSet('sabor-servico', opts.servico ? '1' : '0'); updateTotals(); });
+    var desc = h('input', { class: 'in num', id: 'desconto', type: 'text', inputmode: 'decimal', placeholder: '0,00', value: opts.desconto });
+    desc.addEventListener('input', function () { opts.desconto = desc.value; updateTotals(); });
+    var pes = h('input', { class: 'in num', id: 'pessoas', type: 'number', min: '1', max: '50', value: String(opts.pessoas) });
+    pes.addEventListener('input', function () { opts.pessoas = pes.value; updateTotals(); });
+    var rec = h('input', { class: 'in num', id: 'recebido', type: 'text', inputmode: 'decimal', placeholder: '0,00', value: opts.recebido });
+    rec.addEventListener('input', function () { opts.recebido = rec.value; updateTotals(); });
+
+    var formas = h('div', { class: 'formas', role: 'group', 'aria-label': 'Forma de pagamento' });
+    FORMAS.forEach(function (f) {
+      var bt = h('button', { type: 'button', class: 'forma', 'data-forma': f[0], 'aria-pressed': String(opts.forma === f[0]), text: f[1] });
+      bt.addEventListener('click', function () { opts.forma = f[0]; updateTotals(); });
+      formas.append(bt);
+    });
+    var pay = h('button', { type: 'button', id: 'pay', class: 'btn gold big', text: 'Receber e fechar conta' });
+    pay.addEventListener('click', function () { fechar(pay); });
+    var prt = h('button', { type: 'button', class: 'btn big', text: 'Imprimir conta' });
+    prt.addEventListener('click', imprimir);
+
+    box.append(h('div', { class: 'fechar' },
+      h('div', { class: 'opts' },
+        h('label', { class: 'chk' }, servico, h('span', { text: 'Serviço 10%' })),
+        h('div', { class: 'field' }, h('label', { for: 'desconto', text: 'Desconto (R$)' }), desc),
+        h('div', { class: 'field' }, h('label', { for: 'pessoas', text: 'Dividir por' }), pes)),
+      h('div', { class: 'field' }, h('span', { class: 'lbl', text: 'Forma de pagamento' }), formas),
+      h('div', { class: 'field', id: 'rec-wrap' }, h('label', { for: 'recebido', text: 'Valor recebido em dinheiro (R$)' }), rec),
+      h('div', { class: 'totais' },
+        h('div', { class: 'r' }, h('span', { text: 'Subtotal' }), h('span', { id: 't-sub', class: 'num' })),
+        h('div', { class: 'r', id: 'r-serv' }, h('span', { text: 'Serviço 10%' }), h('span', { id: 't-serv', class: 'num' })),
+        h('div', { class: 'r', id: 'r-desc' }, h('span', { text: 'Desconto' }), h('span', { id: 't-desc', class: 'num' })),
+        h('div', { class: 'r total' }, h('span', { text: 'Total' }), h('span', { id: 't-total', class: 'num' })),
+        h('div', { class: 'r', id: 'r-each' }, h('span', { text: 'Por pessoa' }), h('span', { id: 't-each', class: 'num' })),
+        h('div', { class: 'r troco', id: 'r-troco' }, h('span', { id: 'l-troco' }), h('b', { id: 't-troco', class: 'num' }))),
+      h('p', { class: 'aviso', id: 'aviso', hidden: true }),
+      h('div', { class: 'acoes' }, prt, pay)));
+    updateTotals();
+  }
+  function setText(sel, txt) { var el = $(sel); if (el) el.textContent = txt; }
+  function updateTotals() {
+    var tab = tabs.get(selected); if (!tab || !$('#t-total')) return;
+    var b = billFor(tab), t = totals(b);
+    setText('#t-sub', brl(t.sub)); setText('#t-serv', brl(t.servico)); setText('#t-desc', '− ' + brl(t.desconto));
+    setText('#t-total', brl(t.total)); setText('#t-each', brl(t.cada));
+    $('#r-serv').hidden = !opts.servico; $('#r-desc').hidden = !t.desconto; $('#r-each').hidden = t.pessoas < 2;
+    document.querySelectorAll('[data-key]').forEach(function (el) {
+      var L = b.byKey[el.getAttribute('data-key')];
+      if (L) el.textContent = L.unit ? brl(L.line) : 'sem preço';
+    });
+    document.querySelectorAll('.forma').forEach(function (el) { el.setAttribute('aria-pressed', String(el.getAttribute('data-forma') === opts.forma)); });
+    var cash = opts.forma === 'dinheiro';
+    $('#rec-wrap').hidden = !cash;
+    $('#r-troco').hidden = !(cash && t.recebido > 0);
+    if (cash && t.recebido > 0) {
+      setText('#l-troco', t.troco >= 0 ? 'Troco' : 'Faltam');
+      setText('#t-troco', brl(Math.abs(t.troco)));
+    }
+    var av = $('#aviso');
+    if (b.missing) { av.hidden = false; av.textContent = b.missing === 1 ? '1 item sem preço. Digite o preço do item marcado em vermelho.' : b.missing + ' itens sem preço. Digite o preço dos itens marcados em vermelho.'; }
+    else if (cash && t.recebido > 0 && t.troco < 0) { av.hidden = false; av.textContent = 'O valor recebido é menor que o total.'; }
+    else av.hidden = true;
+    $('#pay').disabled = !!b.missing || !opts.forma || (cash && t.recebido > 0 && t.troco < 0);
+    renderList();
+  }
+
+  /* ---------- fechar a conta ---------- */
+  function fechar(btn) {
+    var tab = tabs.get(selected); if (!tab) return;
+    var b = billFor(tab), t = totals(b);
+    if (b.missing) { toast('Defina o preço dos itens marcados.'); return; }
+    if (!opts.forma) { toast('Escolha a forma de pagamento.'); return; }
+    var key = tab.key, ids = tab.orders.map(function (o) { return o.id; });
+    var contaId = pending[key] || (pending[key] = uuid());
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    var conta = {
+      id: contaId, mesa: tab.mesa, subtotal: t.sub / 100, servico: t.servico / 100, desconto: t.desconto / 100, total: t.total / 100,
+      forma: opts.forma, pessoas: t.pessoas,
+      itens: b.lines.map(function (L) { return { q: L.it.q || 1, n: L.it.n, o: L.it.o || '', preco: L.unit / 100 }; })
+    };
+    var mesaNome = tab.mesa, totalTxt = brl(t.total);
+    sb.from('contas').insert(conta).then(function (r) {
+      if (r.error && r.error.code !== '23505') throw r.error;
+      return sb.from('pedidos').update({ conta_id: contaId, pago_em: new Date().toISOString() }).in('id', ids);
+    }).then(function (r) {
+      if (r.error) throw r.error;
+      delete pending[key];
+      toast('Mesa ' + mesaNome + ' paga: ' + totalTxt);
+      selected = null; lastSig = ''; renderDetail(); refetch(); loadHoje();
+    }).catch(function () {
+      btn.disabled = false; btn.textContent = 'Receber e fechar conta';
+      toast('Não foi possível fechar a conta. Confira a internet e toque de novo.');
+    });
+  }
+
+  /* ---------- impressão ---------- */
+  function imprimir() {
+    var tab = tabs.get(selected); if (!tab) return;
+    var b = billFor(tab), t = totals(b), r = $('#recibo');
+    function row(a, c, cls) { return h('div', { class: 'rl ' + (cls || '') }, h('span', { text: a }), h('span', { text: c })); }
+    r.textContent = '';
+    r.append(h('h3', { text: 'SABOR Original' }), h('p', { text: 'Restaurante e Petiscaria' }),
+      h('p', { text: 'Mesa ' + tab.mesa + ' · ' + new Date().toLocaleString('pt-BR') }), h('hr'));
+    b.lines.forEach(function (L) {
+      r.append(row((L.it.q || 1) + 'x ' + L.it.n, L.unit ? brl(L.line) : '—'));
+    });
+    r.append(h('hr'), row('Subtotal', brl(t.sub)));
+    if (t.servico) r.append(row('Serviço 10%', brl(t.servico)));
+    if (t.desconto) r.append(row('Desconto', '- ' + brl(t.desconto)));
+    r.append(row('TOTAL', brl(t.total), 'tt'));
+    if (t.pessoas > 1) r.append(row('Por pessoa (' + t.pessoas + ')', brl(t.cada)));
+    r.append(h('hr'), h('p', { text: 'Sem valor fiscal' }), h('p', { text: 'Obrigado pela visita!' }));
+    window.print();
+  }
+})();
+</script>
+</body>
+</html>
