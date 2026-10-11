@@ -62,17 +62,21 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
 .err { color: var(--late); font-weight: 600; min-height: 1.2em; margin: 0; }
 .login { max-width: 420px; margin: 8vh auto 0; }
 
-.layout { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 20px; align-items: start; }
-.hoje { margin-bottom: 18px; display: grid; gap: 4px; }
-.hoje .big { font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1; }
-.hoje .sub { color: var(--muted); font-size: 0.88rem; }
-.lista { display: grid; gap: 8px; }
-.conta { text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-.conta.sel { border-color: var(--gold); background: var(--surface-2); }
-.c-mesa { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
-.c-total { font-weight: 600; align-self: center; }
-.c-meta { grid-column: 1 / -1; color: var(--muted); font-size: 0.85rem; }
-.c-meta b { color: var(--late); font-weight: 600; }
+.layout { display: grid; grid-template-columns: minmax(280px, 440px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.hoje { display: grid; gap: 6px; max-width: 520px; }
+.hoje .big { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1; }
+.hoje .sub { color: var(--muted); font-size: 0.95rem; }
+.rodape { margin-top: 36px; text-align: center; }
+.lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; }
+.conta { text-align: center; display: grid; justify-items: center; gap: 2px; background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 14px 8px 12px; min-height: 124px; align-content: center; }
+.conta:hover { border-color: var(--gold); }
+.conta.sel { border-color: var(--gold); background: var(--gold); color: var(--gold-ink); }
+.c-lbl { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.c-mesa { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1; overflow-wrap: anywhere; }
+.c-total { font-weight: 700; font-size: 1.05rem; }
+.c-meta { color: var(--muted); font-size: 0.78rem; }
+.c-meta b { color: var(--late); font-weight: 600; display: block; }
+.conta.sel .c-lbl, .conta.sel .c-meta, .conta.sel .c-meta b { color: var(--gold-ink); }
 .empty { border: 1px dashed var(--line); border-radius: 12px; padding: 28px 18px; text-align: center; color: var(--muted); }
 .empty strong { display: block; color: var(--fg); font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
 
@@ -142,7 +146,7 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
     <div class="brand"><span class="brand-s">SABOR</span><span class="brand-o">Original</span></div>
     <span class="tag">Caixa</span>
     <nav id="nav" class="nav" aria-label="Tela" hidden>
-      <button id="nav-contas" type="button" aria-selected="true">Contas</button>
+      <button id="nav-contas" type="button" aria-selected="true">Caixa</button>
       <button id="nav-cardapio" type="button" aria-selected="false">Cardápio e preços</button>
     </nav>
     <span id="conn" class="conn" hidden><i></i><span id="conn-txt"></span></span>
@@ -167,12 +171,20 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
   <main id="app" hidden>
     <div id="view-contas" class="layout">
       <aside>
-        <section id="hoje" class="card hoje"></section>
-        <h2>Contas abertas</h2>
+        <h2>Mesas abertas</h2>
         <div id="lista" class="lista"></div>
       </aside>
       <section id="detalhe" class="card"></section>
     </div>
+
+    <section id="view-dia" class="card stack" hidden>
+      <div>
+        <h2>Fechamento do dia</h2>
+        <p class="hint">Os valores ficam escondidos. Toque em “Mostrar valores” só quando for conferir o caixa.</p>
+      </div>
+      <div id="hoje" class="hoje"></div>
+      <div><button id="dia-toggle" class="btn" type="button">Mostrar valores</button></div>
+    </section>
 
     <section id="view-cardapio" class="card stack" hidden>
       <div>
@@ -186,6 +198,7 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
       </div>
       <div id="m-lista"></div>
     </section>
+    <p class="rodape"><button id="abrir-dia" class="linkbtn" type="button">Fechamento do dia</button></p>
   </main>
 </div>
 <div id="recibo"></div>
@@ -231,6 +244,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
   var FORMAS = [['dinheiro', 'Dinheiro'], ['pix', 'Pix'], ['debito', 'Débito'], ['credito', 'Crédito']];
   var tabs = new Map(), menuRows = [], priceMap = {}, selected = null, lastSig = '', manual = {}, pending = {}, view = 'contas';
   var opts = { servico: lsGet('sabor-servico') === '1', desconto: '', pessoas: 1, forma: null, recebido: '' };
+  var showMoney = false, hojeData = null;
   var channel = null, pollTimer = null, refetchTimer = null;
 
   /* ---------- utilidades ---------- */
@@ -289,16 +303,24 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
     view = v;
     $('#view-contas').hidden = v !== 'contas';
     $('#view-cardapio').hidden = v !== 'cardapio';
-    $('#nav-contas').setAttribute('aria-selected', String(v === 'contas'));
+    $('#view-dia').hidden = v !== 'dia';
+    $('#abrir-dia').hidden = v === 'dia';
+    showMoney = false; $('#dia-toggle').textContent = 'Mostrar valores';
+    $('#nav-contas').setAttribute('aria-selected', String(v === 'contas' || v === 'dia'));
     $('#nav-cardapio').setAttribute('aria-selected', String(v === 'cardapio'));
   }
   function setView(v) {
     showView(v);
     if (v === 'cardapio') loadCardapio();
+    else if (v === 'dia') loadHoje();
     else loadCardapio().then(function () { lastSig = ''; refetch(); });
   }
   $('#nav-contas').addEventListener('click', function () { setView('contas'); });
   $('#nav-cardapio').addEventListener('click', function () { setView('cardapio'); });
+  $('#abrir-dia').addEventListener('click', function () { setView('dia'); });
+  $('#dia-toggle').addEventListener('click', function () {
+    showMoney = !showMoney; $('#dia-toggle').textContent = showMoney ? 'Esconder valores' : 'Mostrar valores'; renderHoje();
+  });
 
   /* ---------- login ---------- */
   function showLogin() { $('#login').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; $('#nav').hidden = true; $('#conn').hidden = true; }
@@ -307,10 +329,9 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
     showView('contas');
     renderDetail();
     loadCardapio().then(refetch);
-    loadHoje();
     subscribe();
     clearInterval(pollTimer);
-    pollTimer = setInterval(function () { refetch(); loadHoje(); }, 20000);
+    pollTimer = setInterval(function () { refetch(); if (view === 'dia') loadHoje(); }, 20000);
   }
   function leave() {
     clearInterval(pollTimer);
@@ -379,13 +400,22 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
   function loadHoje() {
     var d = new Date(); d.setHours(0, 0, 0, 0);
     sb.from('contas').select('total,forma').gte('pago_em', d.toISOString()).then(function (r) {
-      var box = $('#hoje'); box.textContent = '';
-      if (r.error) { box.append(h('span', { class: 'hint', text: 'Resumo do dia indisponível. Rodou o caixa.sql no Supabase?' })); return; }
+      if (r.error) { hojeData = { erro: true }; renderHoje(); return; }
       var sum = 0, by = {};
       r.data.forEach(function (c) { var v = Math.round(Number(c.total) * 100); sum += v; by[c.forma] = (by[c.forma] || 0) + v; });
-      box.append(h('span', { class: 'lbl', text: 'Recebido hoje' }), h('span', { class: 'big num', text: brl(sum) }),
-        h('span', { class: 'sub', text: r.data.length + (r.data.length === 1 ? ' conta paga' : ' contas pagas') }),
-        h('span', { class: 'sub', text: FORMAS.filter(function (f) { return by[f[0]]; }).map(function (f) { return f[1] + ' ' + brl(by[f[0]]); }).join(' · ') }));
+      hojeData = { sum: sum, by: by, n: r.data.length };
+      renderHoje();
+    });
+  }
+  function renderHoje() {
+    var box = $('#hoje'); box.textContent = '';
+    if (!hojeData) return;
+    if (hojeData.erro) { box.append(h('span', { class: 'hint', text: 'Resumo do dia indisponível. Rodou o caixa.sql no Supabase?' })); return; }
+    var mask = 'R$ ••••';
+    box.append(h('span', { class: 'lbl', text: 'Recebido hoje' }), h('span', { class: 'big num', text: showMoney ? brl(hojeData.sum) : mask }),
+      h('span', { class: 'sub', text: hojeData.n + (hojeData.n === 1 ? ' conta paga' : ' contas pagas') }));
+    FORMAS.forEach(function (f) {
+      if (hojeData.by[f[0]]) box.append(h('span', { class: 'sub num', text: f[1] + ': ' + (showMoney ? brl(hojeData.by[f[0]]) : mask) }));
     });
   }
 
@@ -470,13 +500,14 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
   function renderList() {
     var box = $('#lista'); box.textContent = '';
     var arr = Array.from(tabs.values()).sort(function (a, b) { return a.first - b.first; });
-    if (!arr.length) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Nenhuma conta aberta' }), 'Os pedidos enviados pelos garçons aparecem aqui, agrupados por mesa.')); return; }
+    if (!arr.length) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Nenhuma conta aberta' }), 'Quando o garçom enviar um pedido, a mesa aparece aqui.')); return; }
     arr.forEach(function (tab) {
       var b = billFor(tab), n = tab.orders.length;
       box.append(h('button', { type: 'button', class: 'conta' + (tab.key === selected ? ' sel' : ''), onclick: function () { select(tab.key); } },
-        h('span', { class: 'c-mesa', text: 'Mesa ' + tab.mesa }),
+        h('span', { class: 'c-lbl', text: 'Mesa' }),
+        h('span', { class: 'c-mesa', text: tab.mesa }),
         h('span', { class: 'c-total num', text: brl(b.sub) }),
-        h('span', { class: 'c-meta' }, n + (n === 1 ? ' pedido' : ' pedidos') + ' · há ' + ago(tab.first), b.missing ? h('b', { text: ' · falta preço' }) : null)));
+        h('span', { class: 'c-meta' }, n + (n === 1 ? ' pedido' : ' pedidos') + ' · há ' + ago(tab.first), b.missing ? h('b', { text: 'falta preço' }) : null)));
     });
   }
 
@@ -494,7 +525,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
   function renderDetail() {
     var box = $('#detalhe'); box.textContent = '';
     var tab = tabs.get(selected);
-    if (!tab) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Selecione uma mesa' }), 'Toque em uma conta aberta para ver os pedidos e receber.')); return; }
+    if (!tab) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Selecione uma mesa' }), 'Toque em uma mesa ao lado para ver a conta e receber.')); return; }
     var b = billFor(tab);
     box.append(h('div', { class: 'd-head' }, h('span', { class: 'mesa', text: 'Mesa ' + tab.mesa }), tab.clientes.length ? h('span', { class: 'cli', text: tab.clientes.join(', ') }) : null));
 
@@ -606,7 +637,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
       if (r.error) throw r.error;
       delete pending[key];
       toast('Mesa ' + mesaNome + ' paga: ' + totalTxt);
-      selected = null; lastSig = ''; renderDetail(); refetch(); loadHoje();
+      selected = null; lastSig = ''; renderDetail(); refetch();
     }).catch(function () {
       btn.disabled = false; btn.textContent = 'Receber e fechar conta';
       toast('Não foi possível fechar a conta. Confira a internet e toque de novo.');
