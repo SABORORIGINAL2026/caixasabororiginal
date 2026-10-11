@@ -33,7 +33,11 @@ button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .num { font-variant-numeric: tabular-nums; }
 .wrap { max-width: 1280px; margin-inline: auto; }
-.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: calc(14px + env(safe-area-inset-top, 0px)) 0 14px; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: calc(12px + env(safe-area-inset-top, 0px)) 0 18px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-bottom: 3px solid var(--gold); border-radius: 14px; }
+.clock { color: var(--muted); font-size: 0.9rem; }
+.chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 6px 12px; font-size: 0.85rem; font-weight: 600; }
+.chip.on { color: var(--ok); border-color: var(--ok); }
+.chip.off { color: var(--late); border-color: var(--late); }
 .brand { display: flex; align-items: baseline; gap: 8px; font-family: var(--font-display); line-height: 1; }
 .brand-s { font-weight: 700; font-size: 1.7rem; letter-spacing: 0.06em; }
 .brand-o { font-weight: 600; font-size: 1.25rem; color: var(--gold); font-style: italic; }
@@ -68,8 +72,10 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
 .hoje .sub { color: var(--muted); font-size: 0.95rem; }
 .rodape { margin-top: 36px; text-align: center; }
 .lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; }
-.conta { text-align: center; display: grid; justify-items: center; gap: 2px; background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 14px 8px 12px; min-height: 124px; align-content: center; }
+.conta { position: relative; overflow: hidden; text-align: center; display: grid; justify-items: center; gap: 2px; background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 14px 8px 12px; min-height: 124px; align-content: center; }
 .conta:hover { border-color: var(--gold); }
+.conta::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 5px; background: var(--gold); }
+.conta.sel::before { background: var(--gold-ink); }
 .conta.sel { border-color: var(--gold); background: var(--gold); color: var(--gold-ink); }
 .c-lbl { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
 .c-mesa { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1; overflow-wrap: anywhere; }
@@ -83,7 +89,7 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
 .d-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 14px; }
 .d-head .mesa { font-family: var(--font-display); font-weight: 700; font-size: 2.4rem; line-height: 1; }
 .d-head .cli { color: var(--muted); overflow-wrap: anywhere; }
-.pedido { border-top: 1px solid var(--line); padding: 12px 0; display: grid; gap: 8px; }
+.pedido { border-top: 1px dashed var(--line); padding: 12px 0; display: grid; gap: 8px; }
 .p-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font-size: 0.85rem; color: var(--muted); }
 .pill { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); }
 .pill.pronto, .pill.entregue { color: var(--ok); border-color: var(--ok); }
@@ -102,11 +108,12 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
 .chk { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
 .chk input { width: 20px; height: 20px; accent-color: var(--gold); }
 .formas { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
-.forma { border: 2px solid var(--line); background: var(--surface-2); border-radius: 10px; padding: 12px 8px; font-weight: 600; }
+.forma { display: grid; justify-items: center; gap: 2px; border: 2px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 14px 8px; font-weight: 600; font-size: 1.05rem; }
+.forma .ic { font-size: 1.6rem; line-height: 1.1; }
 .forma[aria-pressed="true"] { border-color: var(--gold); background: var(--gold); color: var(--gold-ink); }
 .totais { display: grid; gap: 6px; }
 .totais .r { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); }
-.totais .r.total { color: var(--fg); font-family: var(--font-display); font-weight: 700; font-size: 2.2rem; line-height: 1.1; padding-top: 6px; }
+.totais .r.total { color: var(--fg); font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.1; padding-top: 6px; }
 .totais .r.troco b { color: var(--ok); }
 .aviso { color: var(--late); font-weight: 600; margin: 0; }
 .acoes { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
@@ -118,6 +125,20 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
 .chk2 { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); }
 .chk2 input { width: 18px; height: 18px; accent-color: var(--gold); }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 12px 18px; border-radius: 10px; font-weight: 600; max-width: calc(100vw - 32px); z-index: 20; }
+h2.h-row { display: flex; align-items: center; gap: 10px; }
+.badge { font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; background: var(--gold); color: var(--gold-ink); border-radius: 999px; padding: 2px 10px; }
+.lcd { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 10px 20px; background: #07120b; color: #7dffb0; border: 2px solid #1c3a28; border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.6); }
+.lcd-l, .lcd-r { display: grid; gap: 2px; min-width: 0; }
+.lcd-r { text-align: right; margin-left: auto; }
+.lcd-k { font-size: 0.72rem; letter-spacing: 0.16em; color: #4fbf80; font-weight: 600; }
+.lcd-mesa, .lcd-v { font-family: var(--font-display); font-weight: 700; font-size: 3rem; line-height: 1; text-shadow: 0 0 10px rgba(125, 255, 176, 0.45); overflow-wrap: anywhere; }
+.lcd-cli { color: #a9f5c8; font-size: 0.95rem; overflow-wrap: anywhere; }
+.lcd-off { color: #ff9b97; background: #190a0a; border-color: #4a1d1c; }
+.lcd-off .lcd-k { color: #d0605c; }
+.gact { display: flex; flex-wrap: wrap; gap: 10px; }
+.gform { display: grid; gap: 12px; border: 2px solid var(--gold); border-radius: 12px; padding: 16px; background: var(--surface-2); }
+.mov { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px dashed var(--line); font-size: 0.92rem; }
+.mov small { display: block; color: var(--muted); }
 [hidden] { display: none !important; }
 
 #recibo { display: none; }
@@ -149,6 +170,8 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
       <button id="nav-contas" type="button" aria-selected="true">Caixa</button>
       <button id="nav-cardapio" type="button" aria-selected="false">Cardápio e preços</button>
     </nav>
+    <button id="chip" class="chip" type="button" hidden></button>
+    <span id="clock" class="clock num"></span>
     <span id="conn" class="conn" hidden><i></i><span id="conn-txt"></span></span>
     <button id="logout" class="linkbtn" type="button" hidden>Sair</button>
   </header>
@@ -171,19 +194,26 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
   <main id="app" hidden>
     <div id="view-contas" class="layout">
       <aside>
-        <h2>Mesas abertas</h2>
+        <h2 class="h-row">Mesas abertas <span id="cnt" class="badge">0</span></h2>
         <div id="lista" class="lista"></div>
       </aside>
       <section id="detalhe" class="card"></section>
     </div>
 
-    <section id="view-dia" class="card stack" hidden>
-      <div>
-        <h2>Fechamento do dia</h2>
-        <p class="hint">Os valores ficam escondidos. Toque em “Mostrar valores” só quando for conferir o caixa.</p>
+    <section id="view-dia" class="stack" hidden>
+      <div class="card stack">
+        <div>
+          <h2>Gaveta e fechamento do dia</h2>
+          <p class="hint">Os valores ficam escondidos. Toque em “Mostrar valores” só quando for conferir o caixa.</p>
+        </div>
+        <div><button id="dia-toggle" class="btn" type="button">Mostrar valores</button></div>
+        <div id="gaveta" class="stack"></div>
+        <div id="gform-box"></div>
       </div>
-      <div id="hoje" class="hoje"></div>
-      <div><button id="dia-toggle" class="btn" type="button">Mostrar valores</button></div>
+      <div class="card stack">
+        <h2>Recebido hoje</h2>
+        <div id="hoje" class="hoje"></div>
+      </div>
     </section>
 
     <section id="view-cardapio" class="card stack" hidden>
@@ -198,7 +228,7 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; lett
       </div>
       <div id="m-lista"></div>
     </section>
-    <p class="rodape"><button id="abrir-dia" class="linkbtn" type="button">Fechamento do dia</button></p>
+    <p class="rodape"><button id="abrir-dia" class="linkbtn" type="button">Gaveta e fechamento do dia</button></p>
   </main>
 </div>
 <div id="recibo"></div>
@@ -241,7 +271,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
   }
   var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  var FORMAS = [['dinheiro', 'Dinheiro'], ['pix', 'Pix'], ['debito', 'Débito'], ['credito', 'Crédito']];
+  var FORMAS = [['dinheiro', 'Dinheiro', '💵'], ['pix', 'Pix', '💠'], ['debito', 'Débito', '💳'], ['credito', 'Crédito', '💳']];
   var tabs = new Map(), menuRows = [], priceMap = {}, selected = null, lastSig = '', manual = {}, pending = {}, view = 'contas';
   var opts = { servico: lsGet('sabor-servico') === '1', desconto: '', pessoas: 1, forma: null, recebido: '' };
   var showMoney = false, hojeData = null;
@@ -305,7 +335,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
     $('#view-cardapio').hidden = v !== 'cardapio';
     $('#view-dia').hidden = v !== 'dia';
     $('#abrir-dia').hidden = v === 'dia';
-    showMoney = false; $('#dia-toggle').textContent = 'Mostrar valores';
+    showMoney = false; $('#dia-toggle').textContent = 'Mostrar valores'; $('#gform-box').textContent = '';
     $('#nav-contas').setAttribute('aria-selected', String(v === 'contas' || v === 'dia'));
     $('#nav-cardapio').setAttribute('aria-selected', String(v === 'cardapio'));
   }
@@ -318,20 +348,24 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
   $('#nav-contas').addEventListener('click', function () { setView('contas'); });
   $('#nav-cardapio').addEventListener('click', function () { setView('cardapio'); });
   $('#abrir-dia').addEventListener('click', function () { setView('dia'); });
+  $('#chip').addEventListener('click', function () { setView('dia'); });
+  function tick() { var d = new Date(); $('#clock').textContent = d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }) + ' · ' + hhmm(d.getTime()); }
+  tick(); setInterval(tick, 30000);
   $('#dia-toggle').addEventListener('click', function () {
     showMoney = !showMoney; $('#dia-toggle').textContent = showMoney ? 'Esconder valores' : 'Mostrar valores'; renderHoje();
   });
 
   /* ---------- login ---------- */
-  function showLogin() { $('#login').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; $('#nav').hidden = true; $('#conn').hidden = true; }
+  function showLogin() { $('#chip').hidden = true; $('#login').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; $('#nav').hidden = true; $('#conn').hidden = true; }
   function enter() {
     $('#login').hidden = true; $('#app').hidden = false; $('#logout').hidden = false; $('#nav').hidden = false;
     showView('contas');
     renderDetail();
     loadCardapio().then(refetch);
+    loadStatus();
     subscribe();
     clearInterval(pollTimer);
-    pollTimer = setInterval(function () { refetch(); if (view === 'dia') loadHoje(); }, 20000);
+    pollTimer = setInterval(function () { refetch(); if (view === 'dia') loadHoje(); else loadStatus(); }, 20000);
   }
   function leave() {
     clearInterval(pollTimer);
@@ -397,26 +431,139 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
       else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') setConn('off', 'Reconectando');
     });
   }
+  /* ---------- gaveta do caixa ---------- */
+  var TIPOS = { abertura: 'Abertura', suprimento: 'Suprimento', sangria: 'Sangria', fechamento: 'Fechamento' };
+  function c100(x) { return Math.round(Number(x || 0) * 100); }
+  function mv(c) { return showMoney ? brl(c) : 'R$ ••••'; }
+  function fetchMov() {
+    var since = new Date(Date.now() - 5 * 86400000).toISOString();
+    return sb.from('caixa_mov').select('*').gte('criado_em', since).order('criado_em', { ascending: true }).then(function (r) {
+      return r.error ? { err: true, mov: [] } : { err: false, mov: r.data || [] };
+    }, function () { return { err: true, mov: [] }; });
+  }
+  function findTurno(mov) {
+    var ab = null, list = [], lastF = null;
+    mov.forEach(function (m) {
+      if (m.tipo === 'abertura') { ab = m; list = []; }
+      else if (m.tipo === 'fechamento') { if (ab) lastF = m; ab = null; list = []; }
+      else if (ab) list.push(m);
+    });
+    return { ab: ab, movs: list, lastF: lastF };
+  }
+  function setChip(t) {
+    var c = $('#chip');
+    if (!t) { c.hidden = true; return; }
+    c.hidden = false;
+    if (t.ab) { c.className = 'chip on'; c.textContent = 'Caixa aberto · desde ' + hhmm(Date.parse(t.ab.criado_em)); }
+    else { c.className = 'chip off'; c.textContent = 'Caixa fechado · abrir'; }
+  }
+  function loadStatus() {
+    return fetchMov().then(function (m) { setChip(m.err ? null : findTurno(m.mov)); });
+  }
   function loadHoje() {
     var d = new Date(); d.setHours(0, 0, 0, 0);
-    sb.from('contas').select('total,forma').gte('pago_em', d.toISOString()).then(function (r) {
-      if (r.error) { hojeData = { erro: true }; renderHoje(); return; }
-      var sum = 0, by = {};
-      r.data.forEach(function (c) { var v = Math.round(Number(c.total) * 100); sum += v; by[c.forma] = (by[c.forma] || 0) + v; });
-      hojeData = { sum: sum, by: by, n: r.data.length };
-      renderHoje();
-    });
+    return fetchMov().then(function (m) {
+      var t = m.err ? null : findTurno(m.mov);
+      setChip(m.err ? null : t);
+      var from = d.getTime();
+      if (t && t.ab) from = Math.min(from, Date.parse(t.ab.criado_em));
+      return sb.from('contas').select('total,forma,pago_em').gte('pago_em', new Date(from).toISOString()).then(function (r) {
+        if (r.error) { hojeData = { erro: true }; renderHoje(); return; }
+        var sum = 0, by = {}, n = 0, din = 0, today = d.getTime(), abT = t && t.ab ? Date.parse(t.ab.criado_em) : 0;
+        r.data.forEach(function (c) {
+          var v = c100(c.total), when = Date.parse(c.pago_em);
+          if (when >= today) { sum += v; by[c.forma] = (by[c.forma] || 0) + v; n++; }
+          if (abT && c.forma === 'dinheiro' && when >= abT) din += v;
+        });
+        var turno = null;
+        if (t && t.ab) {
+          var sup = 0, sang = 0, abv = c100(t.ab.valor);
+          t.movs.forEach(function (x) { if (x.tipo === 'suprimento') sup += c100(x.valor); else if (x.tipo === 'sangria') sang += c100(x.valor); });
+          turno = { ab: t.ab, movs: t.movs, abv: abv, din: din, sup: sup, sang: sang, esp: abv + din + sup - sang };
+        }
+        hojeData = { sum: sum, by: by, n: n, movErr: m.err, turno: turno, lastF: t ? t.lastF : null };
+        renderHoje();
+      });
+    }).catch(function () { hojeData = { erro: true }; renderHoje(); });
   }
   function renderHoje() {
-    var box = $('#hoje'); box.textContent = '';
+    var box = $('#hoje'), g = $('#gaveta'); box.textContent = ''; g.textContent = '';
     if (!hojeData) return;
     if (hojeData.erro) { box.append(h('span', { class: 'hint', text: 'Resumo do dia indisponível. Rodou o caixa.sql no Supabase?' })); return; }
-    var mask = 'R$ ••••';
-    box.append(h('span', { class: 'lbl', text: 'Recebido hoje' }), h('span', { class: 'big num', text: showMoney ? brl(hojeData.sum) : mask }),
+    box.append(h('span', { class: 'lbl', text: 'Total recebido hoje' }), h('span', { class: 'big num', text: mv(hojeData.sum) }),
       h('span', { class: 'sub', text: hojeData.n + (hojeData.n === 1 ? ' conta paga' : ' contas pagas') }));
     FORMAS.forEach(function (f) {
-      if (hojeData.by[f[0]]) box.append(h('span', { class: 'sub num', text: f[1] + ': ' + (showMoney ? brl(hojeData.by[f[0]]) : mask) }));
+      if (hojeData.by[f[0]]) box.append(h('span', { class: 'sub num', text: f[1] + ': ' + mv(hojeData.by[f[0]]) }));
     });
+    renderGaveta(g);
+  }
+  function gbtn(txt, tipo, gold) {
+    return h('button', { type: 'button', class: 'btn' + (gold ? ' gold' : ''), text: txt, onclick: function () { openForm(tipo); } });
+  }
+  function renderGaveta(g) {
+    if (hojeData.movErr) { g.append(h('p', { class: 'hint', text: 'Gaveta indisponível. Rodou o caixa-gaveta.sql no Supabase?' })); return; }
+    var t = hojeData.turno;
+    if (!t) {
+      g.append(h('div', { class: 'lcd lcd-off' }, h('div', { class: 'lcd-l' }, h('span', { class: 'lcd-k', text: 'GAVETA' }), h('span', { class: 'lcd-v', text: 'Caixa fechado' }))));
+      if (hojeData.lastF) {
+        var f = hojeData.lastF, dif = c100(f.valor) - c100(f.esperado);
+        g.append(h('p', { class: 'hint num', text: 'Último fechamento: ' + new Date(f.criado_em).toLocaleString('pt-BR') + ' · contado ' + mv(c100(f.valor)) + ' · ' + (dif === 0 ? 'sem diferença' : (dif > 0 ? 'sobra ' : 'falta ') + mv(Math.abs(dif))) }));
+      }
+      g.append(h('div', { class: 'gact' }, gbtn('Abrir caixa', 'abertura', true)));
+      return;
+    }
+    g.append(h('div', { class: 'lcd' }, h('div', { class: 'lcd-l' }, h('span', { class: 'lcd-k', text: 'DINHEIRO NA GAVETA' }), h('span', { class: 'lcd-v num', text: mv(t.esp) })),
+      h('div', { class: 'lcd-r' }, h('span', { class: 'lcd-k', text: 'ABERTO DESDE' }), h('span', { class: 'lcd-cli num', text: hhmm(Date.parse(t.ab.criado_em)) }))));
+    function row(a, c, cls) { return h('div', { class: 'r ' + (cls || '') }, h('span', { text: a }), h('span', { class: 'num', text: c })); }
+    g.append(h('div', { class: 'totais' },
+      row('Troco inicial (abertura)', mv(t.abv)), row('Vendas em dinheiro', '+ ' + mv(t.din)),
+      row('Suprimentos', '+ ' + mv(t.sup)), row('Sangrias', '− ' + mv(t.sang))));
+    g.append(h('div', { class: 'gact' }, gbtn('Sangria (retirar)', 'sangria'), gbtn('Suprimento (colocar)', 'suprimento'), gbtn('Fechar caixa', 'fechamento', true)));
+    if (t.movs.length) {
+      var lst = h('div', {});
+      t.movs.slice().reverse().forEach(function (x) {
+        lst.append(h('div', { class: 'mov' }, h('span', {}, TIPOS[x.tipo], h('small', { class: 'num', text: hhmm(Date.parse(x.criado_em)) + (x.obs ? ' · ' + x.obs : '') })),
+          h('span', { class: 'num', text: (x.tipo === 'sangria' ? '− ' : '+ ') + mv(c100(x.valor)) })));
+      });
+      g.append(h('div', {}, h('span', { class: 'lbl', text: 'Movimentos desta abertura' }), lst));
+    }
+  }
+  function openForm(tipo) {
+    var titles = { abertura: 'Abrir caixa', sangria: 'Sangria: retirar dinheiro', suprimento: 'Suprimento: colocar dinheiro', fechamento: 'Fechar caixa' };
+    var labels = { abertura: 'Dinheiro colocado na gaveta (R$)', sangria: 'Valor retirado (R$)', suprimento: 'Valor colocado (R$)', fechamento: 'Dinheiro contado na gaveta (R$)' };
+    var hints = { abertura: 'Conte o troco que está entrando na gaveta agora.', sangria: 'Escreva o motivo. Ex.: pagamento de fornecedor, depósito.', suprimento: 'Use quando colocar mais troco na gaveta.', fechamento: 'Conte todo o dinheiro da gaveta e digite o total. O sistema mostra se sobrou ou faltou.' };
+    var v = h('input', { class: 'in num', id: 'g-valor', type: 'text', inputmode: 'decimal', placeholder: '0,00' });
+    var o = h('input', { class: 'in', id: 'g-obs', type: 'text', maxlength: '120', placeholder: tipo === 'sangria' ? 'Motivo (obrigatório)' : 'Observação (opcional)' });
+    var ok = h('button', { type: 'submit', class: 'btn gold', text: 'Confirmar' });
+    var cancel = h('button', { type: 'button', class: 'btn', text: 'Cancelar', onclick: function () { $('#gform-box').textContent = ''; } });
+    var form = h('form', { class: 'gform' },
+      h('h2', { text: titles[tipo] }), h('p', { class: 'hint', text: hints[tipo] }),
+      h('div', { class: 'field' }, h('label', { for: 'g-valor', text: labels[tipo] }), v),
+      h('div', { class: 'field' }, h('label', { for: 'g-obs', text: 'Observação' }), o),
+      h('div', { class: 'gact' }, ok, cancel));
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      if (!String(v.value).trim()) { toast('Digite o valor.'); v.focus(); return; }
+      var c = toCents(v.value);
+      if ((tipo === 'sangria' || tipo === 'suprimento') && !c) { toast('Digite um valor maior que zero.'); v.focus(); return; }
+      if (tipo === 'sangria' && !o.value.trim()) { toast('Escreva o motivo da sangria.'); o.focus(); return; }
+      var row = { tipo: tipo, valor: c / 100, obs: o.value.trim() || null };
+      var esp = hojeData && hojeData.turno ? hojeData.turno.esp : 0;
+      if (tipo === 'fechamento') row.esperado = esp / 100;
+      ok.disabled = true;
+      sb.from('caixa_mov').insert(row).then(function (r) {
+        if (r.error) { ok.disabled = false; toast('Não foi possível salvar. Rodou o caixa-gaveta.sql no Supabase?'); return; }
+        $('#gform-box').textContent = '';
+        if (tipo === 'fechamento') {
+          var dif = c - esp;
+          toast(dif === 0 ? 'Caixa fechado. Sem diferença.' : 'Caixa fechado. ' + (dif > 0 ? 'Sobra de ' : 'Falta de ') + brl(Math.abs(dif)));
+        } else toast(TIPOS[tipo] + ' registrada');
+        loadHoje();
+      }, function () { ok.disabled = false; toast('Sem internet. Tente de novo.'); });
+    });
+    var box = $('#gform-box'); box.textContent = ''; box.append(form);
+    try { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    v.focus();
   }
 
   /* ---------- cardápio e preços ---------- */
@@ -499,6 +646,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
   }
   function renderList() {
     var box = $('#lista'); box.textContent = '';
+    $('#cnt').textContent = String(tabs.size);
     var arr = Array.from(tabs.values()).sort(function (a, b) { return a.first - b.first; });
     if (!arr.length) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Nenhuma conta aberta' }), 'Quando o garçom enviar um pedido, a mesa aparece aqui.')); return; }
     arr.forEach(function (tab) {
@@ -527,7 +675,9 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
     var tab = tabs.get(selected);
     if (!tab) { box.append(h('div', { class: 'empty' }, h('strong', { text: 'Selecione uma mesa' }), 'Toque em uma mesa ao lado para ver a conta e receber.')); return; }
     var b = billFor(tab);
-    box.append(h('div', { class: 'd-head' }, h('span', { class: 'mesa', text: 'Mesa ' + tab.mesa }), tab.clientes.length ? h('span', { class: 'cli', text: tab.clientes.join(', ') }) : null));
+    box.append(h('div', { class: 'lcd' },
+      h('div', { class: 'lcd-l' }, h('span', { class: 'lcd-k', text: 'MESA' }), h('span', { class: 'lcd-mesa', text: tab.mesa }), tab.clientes.length ? h('span', { class: 'lcd-cli', text: tab.clientes.join(', ') }) : null),
+      h('div', { class: 'lcd-r' }, h('span', { class: 'lcd-k', text: 'TOTAL A PAGAR' }), h('span', { class: 'lcd-v num', id: 't-lcd' }))));
 
     tab.orders.forEach(function (o) {
       var cancel = h('button', { type: 'button', class: 'btn small', text: 'Cancelar pedido' });
@@ -561,7 +711,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
 
     var formas = h('div', { class: 'formas', role: 'group', 'aria-label': 'Forma de pagamento' });
     FORMAS.forEach(function (f) {
-      var bt = h('button', { type: 'button', class: 'forma', 'data-forma': f[0], 'aria-pressed': String(opts.forma === f[0]), text: f[1] });
+      var bt = h('button', { type: 'button', class: 'forma', 'data-forma': f[0], 'aria-pressed': String(opts.forma === f[0]) }, h('span', { class: 'ic', text: f[2], 'aria-hidden': 'true' }), h('span', { text: f[1] }));
       bt.addEventListener('click', function () { opts.forma = f[0]; updateTotals(); });
       formas.append(bt);
     });
@@ -593,7 +743,7 @@ var SUPABASE_ANON_KEY = 'sb_publishable_resb0eT3FvA0q2xxpwR6uw_yaod0nUS';
     var tab = tabs.get(selected); if (!tab || !$('#t-total')) return;
     var b = billFor(tab), t = totals(b);
     setText('#t-sub', brl(t.sub)); setText('#t-serv', brl(t.servico)); setText('#t-desc', '− ' + brl(t.desconto));
-    setText('#t-total', brl(t.total)); setText('#t-each', brl(t.cada));
+    setText('#t-total', brl(t.total)); setText('#t-lcd', brl(t.total)); setText('#t-each', brl(t.cada));
     $('#r-serv').hidden = !opts.servico; $('#r-desc').hidden = !t.desconto; $('#r-each').hidden = t.pessoas < 2;
     document.querySelectorAll('[data-key]').forEach(function (el) {
       var L = b.byKey[el.getAttribute('data-key')];
